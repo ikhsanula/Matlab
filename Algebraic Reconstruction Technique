@@ -1,0 +1,124 @@
+%Program Algebraic Reconstruction Technique
+%Ikhsanul Agusti
+%10217031
+%Kapita Selekta Biofisika dan Fisika Medis
+clc;
+clear;
+sum = 0;
+%Matriks Target
+Matriks = [1 2 3; 4 5 6; 7 8 8];
+l=1;
+n=4;
+%Mencari matriks Abu-abu I (samping)
+for i = 1:n
+    for j = 1:n
+    sum = sum + Matriks(i,j);
+    end;
+    Samping(i,1)=sum;
+    sum=0;
+end
+disp('Matriks Samping');
+disp(Samping);
+%Mencari matriks Abu-abu II (Bawah)
+for i = 1:n
+    for j = 1:n
+    sum = sum + Matriks(j,i);
+    end;
+    Bawah(1,i)=sum;
+    sum=0;
+end
+disp('Matriks Bawah');
+disp(Bawah);
+MiringKanan=zeros(1,5);
+%Segitiga bawah
+for i =1:3  
+k=1;
+        for j=i:3
+        MiringKanan(4-i)=MiringKanan(4-i)+Matriks(k,j);
+        k=k+1;
+    end
+end
+%segitiga atas
+for i=0:1
+    k=1;
+    for j=i:1
+        MiringKanan(4+i)=MiringKanan(4+i)+Matriks(j+2,k);
+        k=k+1;
+    end
+end
+disp('Matriks Miring Kanan');
+disp(MiringKanan);
+Samping = Samping/n;
+for i = 1:n
+    for j = 1:n
+        MPutihI(j,i)= Samping(j,1);
+    end
+end
+disp('Matriks PutihI');
+disp(MPutihI);
+for i = 1:n
+    sum = MPutihI(i,1)+sum;
+end
+for i = 1:n
+    MSamping(1,i)=sum;
+end
+sum=0;
+for i = 1:n
+  MSelisih(1,i)=Bawah(1,i)-MSamping(1,i);  
+end
+MSelisih=MSelisih/n;
+for i = 1:n
+    for j = 1:n
+        MPutihII(i,j)=MPutihI(i,j)+MSelisih(1,j);
+    end
+end
+disp('Matriks PutihII');
+disp(MPutihII);
+%Matriks Miring
+Miring=zeros(1,5);
+%Segitiga bawah
+for i =1:3  
+k=1;
+        for j=i:3
+        Miring(4-i)=Miring(4-i)+MPutihII(k,j);
+        k=k+1;
+    end
+end
+%segitiga atas
+for i=0:1
+    k=1;
+    for j=i:1
+        Miring(4+i)=Miring(4+i)+MPutihII(j+2,k);
+        k=k+1;
+    end
+end
+
+%Pengurangan Miring
+BiruMiring(1,1)=(MiringKanan(1,1)-Miring(1,1))/(n-2);
+BiruMiring(1,2)=(MiringKanan(1,2)-Miring(1,2))/(n-1);
+BiruMiring(1,3)=(MiringKanan(1,3)-Miring(1,3))/n;
+BiruMiring(1,4)=(MiringKanan(1,4)-Miring(1,4))/(n-1);
+BiruMiring(1,5)=(MiringKanan(1,5)-Miring(1,5))/(n-2);
+
+
+%Mendapatkan Matriks Orenge
+Orange=zeros(3,3);
+%segitiga atas
+ for i=1:3 
+   k=1;    
+    for j=i:3     
+        Orange(k,j)=MPutihII(k,j)+BiruMiring(4-i);
+        k=k+1;        
+    end      
+end
+%segitiga bawah
+for i=0:1
+    k=1;
+    for j=i:1
+        Orange(j+2,k)=MPutihII(j+2,k)+BiruMiring(4+i);
+        k=k+1;
+    end
+end 
+disp('Matriks Target:');
+disp(Orange);%Matriks target
+return;
